@@ -1,0 +1,24 @@
+version: 2.1
+
+jobs:
+  johnny-cache:
+    docker:
+      - image: cimg/base:stable
+    steps:
+      - checkout
+      - restore_cache:
+          keys:
+            - 1-ip-ranges-{{ checksum "date.txt" }}
+      - run:
+          name: Get IP ranges
+          command: |
+            dig all.knownips.circleci.com A +short > ip-ranges.txt
+      - save_cache:
+          key: 1-ip-ranges-{{ checksum "date.txt" }}
+          paths:
+            - ip-ranges.txt
+
+workflows:
+  cache-is-king:
+    jobs:
+      - johnny-cache
