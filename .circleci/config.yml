@@ -2,8 +2,9 @@ version: 2.1
 
 jobs:
   johnny-cache:
+    resource_class: small
     docker:
-      - image: cimg/base:stable
+      - image: buildpack-deps:impish-scm
     steps:
       - checkout
       - restore_cache:
