@@ -7,6 +7,7 @@ jobs:
       - image: buildpack-deps:impish-scm
     steps:
       - checkout
+      - run: apt update && apt install -y dnsutils
       - restore_cache:
           keys:
             - 1-ip-ranges-{{ checksum "date.txt" }}
