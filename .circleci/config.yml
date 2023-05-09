@@ -4,22 +4,30 @@ jobs:
   johnny-cache:
     resource_class: small
     docker:
-      - image: buildpack-deps:impish-scm
+      - image: cimg/base:current
+    parallelism: 3
     steps:
-      - checkout
-      - run: apt update && apt install -y dnsutils
       - restore_cache:
           keys:
-            - 1-ip-ranges-{{ checksum "date.txt" }}
+            - johhny-cache-{{ arch }}-{{ .Branch }}-
+            - johhny-cache-{{ arch }}-
       - run:
-          name: Get IP ranges
+          name: sleep based on node index
           command: |
-            dig all.knownips.circleci.com A +short > ip-ranges.txt
+            sleep $(((CIRCLE_NODE_INDEX+1) * 10))
+      - run:
+          name: check dependency
+          command: |
+            cat dep/check.txt || true
+      - run:
+          name: create or update dependency
+          command: |
+            mkdir dep
+            echo "This is created by ${CIRCLE_BUILD_URL} on Node ${CIRCLE_NODE_INDEX}" > dep/check.txt
       - save_cache:
-          key: 1-ip-ranges-{{ checksum "date.txt" }}
+          key: johhny-cache-{{ arch }}-{{ .Branch }}-{{ checksum "dep/check.txt" }}
           paths:
-            - ip-ranges.txt
-
+            -  dep
 workflows:
   cache-is-king:
     jobs:
