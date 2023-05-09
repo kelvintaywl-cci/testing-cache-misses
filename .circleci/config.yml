@@ -22,7 +22,8 @@ jobs:
       - run:
           name: create or update dependency
           command: |
-            mkdir dep
+            # create dep folder if it does not exist
+            [[ -d dep ]] || mkdir dep
             echo "This is created by ${CIRCLE_BUILD_URL} on Node ${CIRCLE_NODE_INDEX}" > dep/check.txt
       - save_cache:
           key: johhny-cache-{{ arch }}-{{ .Branch }}-{{ checksum "dep/check.txt" }}
